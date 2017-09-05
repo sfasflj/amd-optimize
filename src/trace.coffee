@@ -3,6 +3,7 @@ fs        = require("fs")
 path      = require("path")
 async     = require("async")
 VinylFile = require("vinyl")
+babel     = require("babel-core")
 
 parse     = require("./parse")
 util      = require("./util")
@@ -25,6 +26,7 @@ module.exports = traceModule = (startModuleName, config, allModules = [], fileLo
 
   foundModuleNames = []
   textFiles = {}
+  es6Files = {}
   jsonFiles = {}
 
   resolveModuleName = (moduleName, relativeTo = "") ->
@@ -34,6 +36,12 @@ module.exports = traceModule = (startModuleName, config, allModules = [], fileLo
     # get rid of text! prefix
     if (isText)
       moduleName = moduleName.replace('text!', '')
+
+    isES6 = (moduleName.indexOf('es6!') != -1)
+
+    # get rid of es6! prefix
+    if (isES6)
+      moduleName = moduleName.replace('es6!', '')
 
     isJson = (moduleName.indexOf('json!') != -1)
 
@@ -60,6 +68,9 @@ module.exports = traceModule = (startModuleName, config, allModules = [], fileLo
     # add resolved name to list of text files
     if (isText)
       textFiles[moduleName] = true
+
+    if (isES6)
+      es6Files[moduleName] = true
 
     # add resolved name to list of json files
     if (isJson)
@@ -127,6 +138,8 @@ module.exports = traceModule = (startModuleName, config, allModules = [], fileLo
     module = null
     isTextFile = !!textFiles[moduleName]
 
+    isES6File = !!es6Files[moduleName]
+
     isJsonFile = !!jsonFiles[moduleName]
 
     # console.log("Resolving", moduleName, fileName)
@@ -156,6 +169,9 @@ module.exports = traceModule = (startModuleName, config, allModules = [], fileLo
 
         if (isJsonFile)
           file.stringContents = 'define(function(){ return JSON.parse(' + JSON.stringify(file.stringContents) + '); });';
+
+        if (isES6File)
+          file.stringContents = babel.transform(file.stringContents).code;
 
         module = new Module(moduleName, file)
         callback(null, file)
