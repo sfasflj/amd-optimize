@@ -1,7 +1,7 @@
 {
-  "name": "amd-optimize",
-  "version": "0.6.1",
-  "description": "An AMD (i.e. RequireJS) optimizer that's stream-friendly. Made for gulp. (WIP)",
+  "name": "amd-optimize-babel",
+  "version": "0.7.0",
+  "description": "fork from amd-optimize, update it to support babel",
   "main": "lib/index.js",
   "scripts": {
     "test": "gulp test"
@@ -25,10 +25,10 @@
     "through2": "~0.4.1",
     "vinyl": "^0.2.3",
     "vinyl-fs": "^0.3.9",
-    "vinyl-sourcemaps-apply": "^0.1.4"
+    "vinyl-sourcemaps-apply": "^0.1.4",
+    "babel-core": "^6.26.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
     "coffee-script": "~1.7.1",
     "gulp": "^3.9.0",
     "gulp-coffee": "^2.3.1",
